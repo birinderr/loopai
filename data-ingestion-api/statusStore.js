@@ -27,9 +27,15 @@ function getStatus(id) {
     if (!record) return null;
 
     const allStatuses = record.batches.map(b => b.status);
-    let overall = "yet_to_start";
-    if (allStatuses.every(s => s === "completed")) overall = "completed";
-    else if (allStatuses.some(s => s === "triggered")) overall = "triggered";
+    let overall;
+
+    if (allStatuses.every(s => s === "yet_to_start")) {
+        overall = "yet_to_start";
+    } else if (allStatuses.every(s => s === "completed")) {
+        overall = "completed";
+    } else {
+        overall = "triggered"; // Mixed or any 'triggered' → triggered
+    }
 
     return {
         ingestion_id: id,
@@ -37,6 +43,7 @@ function getStatus(id) {
         batches: record.batches
     };
 }
+
 
 function updateBatchStatus(ingestion_id, batch_id, status) {
     const record = ingestions[ingestion_id];
